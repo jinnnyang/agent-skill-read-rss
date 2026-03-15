@@ -43,44 +43,57 @@ python <read-rss-skill>/scripts/rss_fetcher.py --opml-url <your-opml-url>
 ```
 (Replace `<your-opml-url>` with the actual URL if it's the first time). The script will print a markdown-formatted list of feeds.
 
-### 2. Fetching and Caching Articles from a Feed
+### 2. Fetching Articles from Feeds (Looping Workflow)
 
-The script uses an intelligent caching mechanism to maintain a complete, up-to-date list of articles for each feed.
+To ensure comprehensive coverage, the agent should fetch articles from multiple feeds in a loop. After getting the list of all available feeds (Step 1), follow this procedure:
 
-#### A. Fetching and Updating the Cache (Standard Operation)
+1.  **Select Feeds to Process**:
+    *   If the user specifies a particular feed, prioritize that one.
+    *   If not, select **3 to 5** different feeds from the list returned in Step 1. The agent should aim for a variety of sources.
+    *   **Constraint**: Process a minimum of 1 and a maximum of 8 feeds unless the user gives a different instruction.
 
-To get all articles for a feed and ensure the local cache is updated with the latest entries, **always use the `--name` parameter**. This is the standard and recommended way to interact with a feed.
+2.  **Loop and Fetch for Each Feed**: For each selected feed URL, execute the fetching command. It is highly recommended to use `--head` (e.g., `--head 3`) to keep the output for each feed concise.
 
-This command performs a "fetch and merge" operation:
-1.  It fetches the latest articles from the network.
-2.  It loads the existing articles from the local cache file (e.g., `assets/items/<feed-title>.jsonl`).
-3.  It merges the new and old articles, removing any duplicates based on the article's unique `link`.
-4.  It overwrites the cache file with the complete, deduplicated, and sorted list.
-5.  Finally, it prints the entire updated list of articles to the console.
-
+**Example Loop**:
 ```sh
-python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url>" --name "<feed-title>"
+# Fetch top 3 articles from the first feed and update its cache
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url1>" --head 3
+
+# Fetch top 3 articles from the second feed and update its cache
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url2>" --head 3
+
+# Fetch top 3 articles from the third feed and update its cache
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url3>" --head 3
 ```
+This proactive approach ensures the agent gathers a broader range of information.
 
-#### B. One-Time Fetch without Caching
+#### Command Details: Caching and Output Control
 
-If you need to quickly see the latest articles from a feed without reading from or writing to the persistent cache, **omit the `--name` parameter**.
+The script uses an intelligent caching mechanism. Here are the details for each command you run inside the loop:
 
-This command will simply fetch the latest articles from the network and print them. It will **not** interact with the cache in any way. This is useful for temporary checks where you don't want to update the main article list.
+##### A. Fetching and Updating the Cache
+
+To fetch the latest articles from a feed and update the local cache, provide the `--feed-url` but **omit the `--name` parameter**. This is the standard operation inside the loop.
 
 ```sh
 python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url>"
 ```
 
-#### C. Controlling Output with --head
+##### B. Reading from Cache (No Update)
 
-By default, when fetching articles, the script will only display the **5 most recent** items from the list. You can control this number using the optional `--head` argument.
+If you only need to see articles already stored for a feed without fetching new ones, **use the `--name` parameter**. This is faster but will not provide the latest content.
 
-For example, to see only the latest 3 articles:
 ```sh
-python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url>" --name "<feed-title>" --head 3
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url>" --name "<feed-title>"
 ```
-This applies to both standard (cached) and one-time fetches.
+
+##### C. Controlling Output with --head
+
+By default, the script displays the **5 most recent** items. Use the `--head` argument to control this number. This is essential for the looping workflow to keep the context manageable.
+
+```sh
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url>" --head 3
+```
 
 ### 3. Reading an Article's Content
 

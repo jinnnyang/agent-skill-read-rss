@@ -19,6 +19,20 @@ Use this skill when you need to:
 
 - If you need to manage or subscribe to new RSS feeds. This skill only reads from a pre-configured OPML file.
 
+## Output Formatting Requirements
+
+When presenting content retrieved from an RSS source (either a list of articles or the content of a single article), you **must** clearly attribute the source and publication time. This helps the user understand the context of the information.
+
+You can use one of the following formats or a similar one, as long as the information is conveyed clearly:
+
+*   Append the attribution in parentheses: `(Author, YYYYMMDD)`
+    *   Example: `(National Data Bureau, 20260315)`
+*   Integrate the attribution into a sentence:
+    *   Example: `On 20260315, the National Data Bureau released news that...`
+    *   Example: `This morning at 9:13 AM, the National Data Bureau published...`
+
+**Core Requirement**: Ensure the user can easily identify the **source** and **time** for each piece of information.
+
 ## Initial Setup & Configuration Check
 
 Before using the skill, the agent **must** ensure the OPML feed URL is configured.

@@ -63,21 +63,27 @@ To ensure comprehensive coverage, the agent should fetch articles from multiple 
 
 1.  **Select Feeds to Process**:
     *   If the user specifies a particular feed, prioritize that one.
-    *   If not, select **3 to 5** different feeds from the list returned in Step 1. The agent should aim for a variety of sources.
-    *   **Constraint**: Process a minimum of 1 and a maximum of 8 feeds unless the user gives a different instruction.
+    *   If not, select **5 to 10** different feeds from the list returned in Step 1. The agent should aim for a variety of sources.
+    *   **Constraint**: Process a minimum of 1 and a maximum of 15 feeds unless the user gives a different instruction.
 
-2.  **Loop and Fetch for Each Feed**: For each selected feed URL, execute the fetching command. It is highly recommended to use `--head` (e.g., `--head 3`) to keep the output for each feed concise.
+2.  **Loop and Fetch for Each Feed**: For each selected feed URL, execute the fetching command. It is highly recommended to use `--head` (e.g., `--head 10`) to keep the output for each feed concise.
 
 **Example Loop**:
 ```sh
-# Fetch top 3 articles from the first feed and update its cache
-python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url1>" --head 3
+# Fetch top 10 articles from the first feed and update its cache
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url1>" --head 10
 
-# Fetch top 3 articles from the second feed and update its cache
-python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url2>" --head 3
+# Fetch top 10 articles from the second feed and update its cache
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url2>" --head 10
 
-# Fetch top 3 articles from the third feed and update its cache
-python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url3>" --head 3
+# Fetch top 10 articles from the third feed and update its cache
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url3>" --head 10
+
+# Fetch top 10 articles from the forth feed and update its cache
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url4>" --head 10
+
+# Fetch top 10 articles from the fifth feed and update its cache
+python <read-rss-skill>/scripts/rss_fetcher.py --feed-url "<feed-xml-url5>" --head 10
 ```
 This proactive approach ensures the agent gathers a broader range of information.
 

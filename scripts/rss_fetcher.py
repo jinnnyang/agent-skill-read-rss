@@ -168,33 +168,32 @@ class RSSFetcher:
                 "keywords": keywords,
             })
 
-        # 2. If a name is provided, handle caching
-        if name:
-            cache_file = ITEMS_CACHE_DIR / f"{sanitize_filename(name)}.jsonl"
-            
-            # Load old items if cache exists
-            old_items = load_jsonl(cache_file) if cache_file.exists() else []
-            
-            # Combine and deduplicate
-            combined_items = old_items + new_items
-            unique_items = deduplicate_items(combined_items, key='link')
-            
-            # Sort by date to keep the list organized
-            try:
-                unique_items.sort(key=lambda x: datetime.strptime(x['pubDate'], "%a, %d %b %Y %H:%M:%S %Z"), reverse=True)
-            except (ValueError, KeyError):
-                # If date parsing fails, do not sort
-                pass
+        # 2. The cache key is the feed URL, ensuring a consistent cache file.
+        # The optional 'name' now controls whether to read existing cache (sync) or just refresh.
+        cache_file = ITEMS_CACHE_DIR / f"{sanitize_filename(feed_url)}.jsonl"
 
-            # Overwrite cache with the updated, complete list
-            with open(cache_file, "w", encoding="utf-8") as f:
-                for item in unique_items:
-                    f.write(json.dumps(item, ensure_ascii=False) + "\n")
-            
-            return unique_items
-        
-        # 3. If no name, just return the fresh items without caching
-        return new_items
+        # 3. If a name is provided, load old items to sync. Otherwise, start fresh.
+        old_items = []
+        if name and cache_file.exists():
+            old_items = load_jsonl(cache_file)
+
+        # 4. Combine, deduplicate, and sort. This always happens.
+        combined_items = old_items + new_items
+        unique_items = deduplicate_items(combined_items, key='link')
+
+        try:
+            unique_items.sort(key=lambda x: datetime.strptime(x['pubDate'], "%a, %d %b %Y %H:%M:%S %Z"), reverse=True)
+        except (ValueError, KeyError):
+            # If date parsing fails, do not sort
+            pass
+
+        # 5. Overwrite cache with the updated list. This always happens.
+        with open(cache_file, "w", encoding="utf-8") as f:
+            for item in unique_items:
+                f.write(json.dumps(item, ensure_ascii=False) + "\n")
+
+        # 6. Return the processed items.
+        return unique_items
 
     def fetch_content(self, content_url, title, author, date):
         """Fetch the content of an article."""
